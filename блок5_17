@@ -1,0 +1,47 @@
+# 17. Стелганорафия в изображении (LSB)
+
+from PIL import Image
+import numpy as np
+
+
+def hide(img_path, msg, out_path):
+    img = Image.open(img_path).convert('RGB')
+    arr = np.array(img)
+    pix = arr.flatten()
+
+    bits = []
+    for b in (msg.encode() + b'\x00\x00\x00\x00\x00\x00\x00\x00'):
+        bits.extend([(b >> i) & 1 for i in range(7, -1, -1)])
+
+    if len(bits) > len(pix):
+        raise ValueError("Изображение слишком маленькое")
+
+    for i, bit in enumerate(bits):
+        pix[i] = (pix[i] & 0xFE) | bit
+
+    Image.fromarray(pix.reshape(arr.shape).astype('uint8')).save(out_path)
+
+
+def extract(img_path):
+    arr = np.array(Image.open(img_path).convert('RGB'))
+    pix = arr.flatten()
+    bits = [p & 1 for p in pix]
+
+    data = bytearray()
+    for i in range(0, len(bits), 8):
+        if i + 8 > len(bits):
+            break
+        byte = 0
+        for j in range(8):
+            byte = (byte << 1) | bits[i + j]
+        if byte == 0:
+            break
+        data.append(byte)
+
+    return data.decode('utf-8', errors='ignore')
+
+
+if __name__ == "__main__":
+    hide('input.png', 'Секретное сообщение', 'output.png')
+    print("Сообщение спрятано в output.png")
+    print(f"Извлечено: {extract('output.png')}")
