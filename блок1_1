@@ -1,0 +1,62 @@
+# 1. Генератор паролей с оценкой стойкости
+
+import random
+import math
+import string
+
+
+def generate_password(length):
+    if length < 1:
+        raise ValueError("Длина пароля должна быть не менее 1 символа")
+
+    lowercase = string.ascii_lowercase
+    uppercase = string.ascii_uppercase
+    digits = string.digits
+    special = "!@#$%^&*()-_=+[]{}|;:,.<>?"
+
+    all_chars = lowercase + uppercase + digits + special
+
+    if length >= 4:
+        password = [
+            random.choice(lowercase),
+            random.choice(uppercase),
+            random.choice(digits),
+            random.choice(special),
+        ]
+        for _ in range(length - 4):
+            password.append(random.choice(all_chars))
+        random.shuffle(password)
+    else:
+        password = [random.choice(all_chars) for _ in range(length)]
+
+    return ''.join(password)
+
+
+def evaluate_password(password):
+    alphabet = 0
+    if any(c in string.ascii_lowercase for c in password):
+        alphabet += 26
+    if any(c in string.ascii_uppercase for c in password):
+        alphabet += 26
+    if any(c in string.digits for c in password):
+        alphabet += 10
+    if any(c in "!@#$%^&*()-_=+[]{}|;:,.<>?" for c in password):
+        alphabet += 28
+
+    if alphabet == 0:
+        return "Слабый"
+
+    entropy = len(password) * math.log2(alphabet)
+
+    if entropy < 40:
+        return f"Слабый (энтропия {entropy:.2f} бит)"
+    elif entropy < 60:
+        return f"Средний (энтропия {entropy:.2f} бит)"
+    else:
+        return f"Сильный (энтропия {entropy:.2f} бит)"
+
+
+if __name__ == "__main__":
+    pwd = generate_password(12)
+    print(f"Пароль: {pwd}")
+    print(f"Оценка: {evaluate_password(pwd)}")
