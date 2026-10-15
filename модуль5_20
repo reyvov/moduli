@@ -1,0 +1,36 @@
+# 20. Гомоморфное шифрование (демо с примитивом)
+
+def encrypt(message, key, p):
+    return (message * key) % p
+
+
+def decrypt(ciphertext, key, p):
+    inverse_key = pow(key, -1, p)
+    return (ciphertext * inverse_key) % p
+
+
+def multiply_ciphertexts(c1, c2, p):
+    return (c1 * c2) % p
+
+
+if __name__ == "__main__":
+    p = 257
+    k = 42
+    m1 = 5
+    m2 = 7
+
+    print(f"Исходные числа: {m1}, {m2}")
+    print(f"Произведение исходных чисел: {m1 * m2}")
+    print()
+
+    c1 = encrypt(m1, k, p)
+    c2 = encrypt(m2, k, p)
+    print(f"Шифртекст 1: {c1}")
+    print(f"Шифртекст 2: {c2}")
+
+    c_product = multiply_ciphertexts(c1, c2, p)
+    print(f"Произведение шифртекстов: {c_product}")
+
+    decrypted = decrypt(c_product, k, p)
+    print(f"Расшифрованное произведение: {decrypted}")
+    print(f"Совпадает с (m1*m2) mod p: {decrypted == (m1 * m2) % p}")
