@@ -1,0 +1,29 @@
+# 6. Атака перебором на слабый пароль
+
+def hash_function(pwd):
+    return sum(ord(c) for c in pwd) % 10000
+
+
+def brute_force_password(target_hash):
+    matching = []
+    for num in range(0, 10000):
+        password = f"{num:04d}"
+        if hash_function(password) == target_hash:
+            matching.append(password)
+    return matching
+
+
+if __name__ == "__main__":
+    test_password = "1234"
+    target_hash = hash_function(test_password)
+
+    print(f"Исходный пароль: {test_password}")
+    print(f"Его хеш: {target_hash}")
+    print()
+
+    found = brute_force_password(target_hash)
+    print(f"Пароли, дающие хеш {target_hash}:")
+    for pwd in found:
+        print(f"  {pwd}")
+    print(f"\nНайдено паролей: {len(found)}")
+    print(f"Сложность: перебор {10000} вариантов — O(10^4)")
