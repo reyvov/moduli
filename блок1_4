@@ -1,0 +1,34 @@
+# 4. Шифр гаммирования XOR
+
+def xor_encrypt(text, key):
+    text_bytes = text.encode('utf-8')
+    key_bytes = key.encode('utf-8')
+    result = bytearray()
+    for i, byte in enumerate(text_bytes):
+        result.append(byte ^ key_bytes[i % len(key_bytes)])
+    return bytes(result)
+
+
+def xor_decrypt(cipher_bytes, key):
+    key_bytes = key.encode('utf-8')
+    result = bytearray()
+    for i, byte in enumerate(cipher_bytes):
+        result.append(byte ^ key_bytes[i % len(key_bytes)])
+    return result.decode('utf-8')
+
+
+if __name__ == "__main__":
+    original_text = "Прикладная информатика"
+    key = "secret_key"
+
+    print("ДЕМОНСТРАЦИЯ ШИФРОВАНИЯ/ДЕШИФРОВАНИЯ XOR")
+    print(f"Исходный текст: {original_text}")
+    print(f"Ключ: {key}")
+    print()
+
+    encrypted = xor_encrypt(original_text, key)
+    print(f"Зашифровано (hex): {encrypted.hex()}")
+
+    decrypted = xor_decrypt(encrypted, key)
+    print(f"Расшифровано: {decrypted}")
+    print(f"Совпадает с исходным: {decrypted == original_text}")
