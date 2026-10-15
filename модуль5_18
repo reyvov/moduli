@@ -1,0 +1,30 @@
+# 18. Анализатор метаданных файлов
+
+import exifread
+
+
+def analyze_metadata(image_path):
+    with open(image_path, 'rb') as f:
+        tags = exifread.process_file(f)
+
+    gps = {tag: tags[tag] for tag in tags if 'GPS' in tag}
+    date = tags.get('EXIF DateTimeOriginal') or tags.get('Image DateTime')
+    model = tags.get('Image Model')
+
+    print(f"Дата съёмки: {date}")
+    print(f"Модель устройства: {model}")
+
+    if gps:
+        print("\nНайдены GPS-координаты:")
+        for k, v in gps.items():
+            print(f"  {k}: {v}")
+        print("ВНИМАНИЕ: файл содержит геолокацию — риск для приватности!")
+    else:
+        print("\nGPS-координаты не найдены.")
+
+    if date or model:
+        print("ВНИМАНИЕ: файл содержит метаданные — риск для приватности!")
+
+
+if __name__ == "__main__":
+    analyze_metadata('photo.jpg')
